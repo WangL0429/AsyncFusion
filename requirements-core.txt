@@ -1,0 +1,11 @@
+numpy==1.26.4
+scipy>=1.10,<2
+scikit-image>=0.20,<0.25
+opencv-python==4.10.0.84
+PyYAML>=6,<7
+einops>=0.6,<1
+natsort>=8,<9
+lmdb>=1.4,<2
+tensorboard>=2.12,<3
+tqdm>=4.65,<5
+requests>=2.28,<3

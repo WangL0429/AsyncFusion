@@ -1,0 +1,95 @@
+# Supply your own compatible synchronous teacher checkpoint before training.
+name: AsyncFusion
+model_type: AsyncFusionModel
+scale: 1
+num_gpu: 4
+manual_seed: 3047
+find_unused_parameters: true
+datasets:
+  train:
+    name: M3SVD_async
+    type: AsyncFusionDataset
+    async_conditions:
+    - ${ASYNCFUSION_DATA_ROOT}/M3SVD_async/sync/train
+    - ${ASYNCFUSION_DATA_ROOT}/M3SVD_async/r2_p0_noncausal_nearest/train
+    - ${ASYNCFUSION_DATA_ROOT}/M3SVD_async/r3_p0_noncausal_nearest/train
+    - ${ASYNCFUSION_DATA_ROOT}/M3SVD_async/r5_p0_noncausal_nearest/train
+    - ${ASYNCFUSION_DATA_ROOT}/M3SVD_async/r8_p0_noncausal_nearest/train
+    async_ir_lq_mod: infrared_Enhance
+    async_vi_lq_mod: visible_Enhance
+    dataroot_gt_ir: ${ASYNCFUSION_DATA_ROOT}/M3SVD/train/infrared_Enhance
+    dataroot_gt_vi: ${ASYNCFUSION_DATA_ROOT}/M3SVD/train/visible_Enhance
+    io_backend:
+      type: disk
+    num_frame: 6
+    gt_size: 128
+    interval_list:
+    - 1
+    random_reverse: false
+    use_shuffle: true
+    num_worker_per_gpu: 4
+    batch_size_per_gpu: 6
+    dataset_enlarge_ratio: 1
+    prefetch_mode: null
+network_g:
+  type: AsyncFusion
+  in_channels: 3
+  out_channels: 3
+  num_features: 32
+  num_blocks:
+  - 2
+  - 2
+  - 4
+  num_decoder_blocks: 2
+  num_heads:
+  - 2
+  - 4
+  - 8
+  ffn_expansion_factor: 1
+  bias: false
+  LayerNorm_type: WithBias
+  embed_dim: 32
+  groups:
+  - 4
+  - 8
+  - 16
+path:
+  pretrain_network_g: null
+  strict_load_g: true
+  pretrain_network_oracle: ./pretrained/synchronous_teacher.pth
+  resume_state: null
+train:
+  optim_g:
+    type: AdamW
+    lr: 2.0e-05
+    weight_decay: 1.0e-05
+    betas:
+    - 0.9
+    - 0.999
+  scheduler:
+    type: CosineAnnealingRestartLR
+    periods:
+    - 108560
+    restart_weights:
+    - 1
+    eta_min: 1.0e-07
+  total_epoch: 4
+  warmup_iter: -1
+  fusion_opt:
+    type: Fusion_loss
+  fidelity_opt:
+    type: Fidelity_loss
+  consistency_opt:
+    type: TemporalConsistency_loss
+  oracle_weight: 1.0
+  motion_weight: 1.0
+  motion_lambda: 10.0
+logger:
+  print_freq: 100
+  save_checkpoint_freq: 6000
+  use_tb_logger: true
+  wandb:
+    project: null
+    resume_id: null
+dist_params:
+  backend: nccl
