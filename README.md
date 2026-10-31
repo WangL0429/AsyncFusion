@@ -76,7 +76,7 @@ Edit [the training configuration](options/train/train_asyncfusion.yml):
 - Set `num_gpu`, `batch_size_per_gpu`, and `num_worker_per_gpu` for your hardware.
 - Provide a compatible synchronous teacher checkpoint at `path.pretrain_network_oracle`. The teacher uses the same network architecture and is frozen during training. Checkpoint keys must match the configured network; a `params` state dictionary is supported.
 - Optionally set `path.pretrain_network_g` to initialize the trainable network from a compatible checkpoint. Its default value is null.
-- Adjust `total_epoch` and the cosine scheduler period for your dataset. Total iterations equal `total_epoch * len(train_loader)`; the default configuration uses four epochs and a scheduler period of 108560 iterations.
+- Adjust `total_epoch` and the cosine scheduler period for your dataset. Total iterations equal `total_epoch * len(train_loader)`; the default configuration uses 20 epochs and a scheduler period of 542800 iterations. Ensure the scheduler period covers the total iterations for your dataset and hardware.
 
 Model checkpoints and datasets must be obtained separately and stored locally.
 
