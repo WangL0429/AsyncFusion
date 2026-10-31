@@ -3,7 +3,7 @@ name: AsyncFusion
 model_type: AsyncFusionModel
 scale: 1
 num_gpu: 4
-manual_seed: 3047
+manual_seed: 1024
 find_unused_parameters: true
 datasets:
   train:
@@ -69,11 +69,11 @@ train:
   scheduler:
     type: CosineAnnealingRestartLR
     periods:
-    - 108560
+    - 542800
     restart_weights:
     - 1
     eta_min: 1.0e-07
-  total_epoch: 4
+  total_epoch: 20
   warmup_iter: -1
   fusion_opt:
     type: Fusion_loss
